@@ -6,6 +6,7 @@
 //
 
 #import "IIDelayedAction.h"
+static IIDelayedAction *commonDelayed;
 
 @interface IIDelayedAction () {
     NSOperationQueue* _queue;
@@ -56,7 +57,17 @@
         _delay = delay;
         _queue = [[NSOperationQueue alloc] init];
         _queue.maxConcurrentOperationCount = 1;
+        _onMainThread = YES;
         [self action:action];
+    }
+    return self;
+}
+
+//只创建公共queue  其他在外面设置
+- (id)initCommonQueue{
+    if ((self = [self init])) {
+        _queue = [[NSOperationQueue alloc] init];
+        _queue.maxConcurrentOperationCount = 1;
     }
     return self;
 }
@@ -74,6 +85,18 @@
 + (IIDelayedAction*)delayedAction:(void(^)(void))action withDelay:(NSTimeInterval)delay
 {
     return [[IIDelayedAction alloc] initWithAction:action delayed:delay];
+}
+
++ (IIDelayedAction*)delayedActionOnCommonQueue:(void(^)(void))action withDelay:(NSTimeInterval)delay
+{
+    if (commonDelayed == nil) {
+        commonDelayed = [[IIDelayedAction alloc] initCommonQueue];
+    }
+    commonDelayed.delay = delay;
+    commonDelayed.onMainThread = YES;
+    [commonDelayed action:action];
+    
+    return commonDelayed;
 }
 
 @end

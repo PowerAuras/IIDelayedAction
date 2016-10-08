@@ -17,6 +17,6 @@
 
 + (IIDelayedAction*)delayedActionWithDelay:(NSTimeInterval)delay;
 + (IIDelayedAction*)delayedAction:(void(^)(void))action withDelay:(NSTimeInterval)delay;
-
++ (IIDelayedAction*)delayedActionOnCommonQueue:(void(^)(void))action withDelay:(NSTimeInterval)delay;
 
 @end
